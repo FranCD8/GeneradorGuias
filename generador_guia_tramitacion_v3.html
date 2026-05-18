@@ -1,0 +1,519 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:700px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;font-family:var(--font-sans);font-size:13px}
+.sb{background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;overflow-y:auto;max-height:700px}
+.main{overflow-y:auto;max-height:700px;background:var(--color-background-primary)}
+.pnl{padding:.75rem 1rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ptit{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:.6rem;font-weight:500}
+.drop{border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center;cursor:pointer;transition:background .15s}
+.drop:hover,.drop.ov{background:var(--color-background-info);border-color:#378add}
+.drop p{font-size:12px;color:var(--color-text-secondary);margin-top:4px}
+.drop small{font-size:10px;color:var(--color-text-tertiary)}
+.ok-file{display:flex;align-items:center;gap:7px;background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-md);padding:6px 9px;margin-top:7px;font-size:11px;color:var(--color-text-success)}
+.ok-file span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:7px}
+.stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px;text-align:center}
+.stat-n{font-size:15px;font-weight:500;color:var(--color-text-success)}
+.stat-l{font-size:9px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em}
+.mods{display:flex;flex-direction:column;gap:3px}
+.mod{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);cursor:pointer;user-select:none;transition:all .12s}
+.mod:hover{border-color:#1d9e75}
+.mod.sel{border-color:#1d9e75;background:var(--color-background-success)}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.mod-n{flex:1;font-size:11px;color:var(--color-text-primary)}
+.mod-ck{font-size:11px;color:var(--color-text-success);opacity:0}
+.mod.sel .mod-ck{opacity:1}
+.gbtn{width:100%;padding:9px;border-radius:var(--border-radius-md);border:none;background:#1a3a2a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.gbtn:hover{background:#2d6648}
+.gbtn:disabled{opacity:.4;cursor:not-allowed}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden;margin-top:6px}
+.pfill{height:100%;background:#1d9e75;transition:width .3s}
+.pmsg{font-size:10px;color:var(--color-text-tertiary);margin-top:3px;text-align:center}
+.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.tab{padding:8px 14px;font-size:12px;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab.act{color:#1a3a2a;border-bottom-color:#1a3a2a;font-weight:500;background:var(--color-background-primary)}
+.tab-body{padding:1rem;display:none}
+.tab-body.act{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:.75rem}
+.ch{padding:.6rem .85rem;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.ch h3{font-size:12.5px;font-weight:500;color:var(--color-text-primary)}
+.ch .sub{font-size:10px;color:var(--color-text-tertiary);margin-top:1px}
+.cb{padding:.85rem}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fr.full{grid-template-columns:1fr}
+label{display:block;font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+input[type=text],input[type=date],textarea{width:100%;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-family:var(--font-sans);font-size:12px;color:var(--color-text-primary);background:var(--color-background-primary);outline:none}
+input:focus,textarea:focus{border-color:#1d9e75}
+textarea{resize:vertical;line-height:1.5}
+.mod-editor{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:.75rem}
+.mod-head{padding:.6rem .85rem;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px;cursor:pointer}
+.mod-head .dot2{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mod-head h4{font-size:12px;font-weight:500;color:var(--color-text-primary);flex:1}
+.mod-head .chevron{font-size:12px;color:var(--color-text-tertiary);transition:transform .2s}
+.mod-head.open .chevron{transform:rotate(180deg)}
+.mod-body{padding:.85rem;display:none}
+.mod-body.open{display:block}
+.mod-field{margin-bottom:.6rem}
+.ptable{width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}
+.ptable th{background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);padding:5px 8px;text-align:left;font-size:9.5px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase}
+.ptable td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:top;overflow:hidden;text-overflow:ellipsis}
+.ptable tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:4px;border:0.5px solid}
+.b-tr{background:#e6f1fb;border-color:#b5d4f4;color:#0c447c}
+.b-in{background:#e1f5ee;border-color:#9fe1cb;color:#085041}
+.b-ar{background:#faeeda;border-color:#fac775;color:#633806}
+.b-ci{background:#f1efe8;border-color:#d3d1c7;color:#444441}
+.b-pl{background:var(--color-background-secondary);border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
+.pre{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem;font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono);line-height:1.8;max-height:200px;overflow-y:auto;white-space:pre}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:3rem 2rem;text-align:center;color:var(--color-text-tertiary);min-height:400px}
+.empty h3{font-size:13px;font-weight:500;color:var(--color-text-secondary)}
+.empty p{font-size:11.5px;max-width:260px;line-height:1.6}
+.dl-box{background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-md);padding:.6rem .85rem;display:flex;align-items:center;gap:8px;margin-top:8px}
+.dl-box a{font-size:12px;font-weight:500;color:var(--color-text-success);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+
+<div class="app">
+<div class="sb">
+  <div class="pnl">
+    <div class="ptit">Importar XML</div>
+    <div class="drop" id="dz">
+      <i class="ti ti-file-upload" style="font-size:22px;color:#1d9e75" aria-hidden="true"></i>
+      <p>Arrastra el XML de Model@</p>
+      <small>o haz clic para seleccionar</small>
+    </div>
+    <input type="file" id="fi" accept=".xml" style="display:none">
+    <div id="finfo"></div>
+  </div>
+  <div class="pnl" id="pp" style="display:none">
+    <div class="ptit">Procedimiento</div>
+    <div id="pbox"></div>
+  </div>
+  <div class="pnl" id="mp" style="display:none">
+    <div class="ptit">Módulos</div>
+    <div class="mods" id="ml"></div>
+  </div>
+  <div class="pnl" id="gp" style="display:none;margin-top:auto">
+    <button class="gbtn" id="gbtn" onclick="gen()">
+      <i class="ti ti-download" aria-hidden="true"></i> Generar ODT
+    </button>
+    <div id="gbar" style="display:none"><div class="pbar"><div class="pfill" id="pf" style="width:0%"></div></div><div class="pmsg" id="pm"></div></div>
+    <div id="dlbox" style="display:none" class="dl-box"><i class="ti ti-check" style="color:var(--color-text-success)" aria-hidden="true"></i><a id="dla" href="#" download="">Descargar ODT</a></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="empty" id="emp">
+    <i class="ti ti-folders" style="font-size:40px;opacity:.25" aria-hidden="true"></i>
+    <h3>Importa un XML de Model@</h3>
+    <p>La herramienta detectará los módulos del procedimiento, cargará los textos base de cada fase y generará la guía de tramitación completa en ODT.</p>
+  </div>
+  <div id="ca" style="display:none">
+    <div class="tabs">
+      <div class="tab act" id="tab1" onclick="showTab('t1',this)">Metadatos</div>
+      <div class="tab" id="tab2" onclick="showTab('t2',this)">Ficha</div>
+      <div class="tab" id="tab3" onclick="showTab('t3',this)">Módulos / textos</div>
+      <div class="tab" id="tab4" onclick="showTab('t4',this)">Vista previa</div>
+    </div>
+    <div class="tab-body act" id="t1">
+      <div class="card">
+        <div class="ch"><div><h3>Datos del documento</h3><div class="sub">Portada y control de versiones</div></div></div>
+        <div class="cb">
+          <div class="fr"><div><label>Nombre del procedimiento</label><input type="text" id="m_nom" placeholder="Ej: Homologación de acciones formativas"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label>Versión</label><input type="text" id="m_ver" value="1.0"></div><div><label>Fecha</label><input type="date" id="m_fecha"></div></div></div>
+          <div class="fr"><div><label>Autor / empresa</label><input type="text" id="m_autor" placeholder="Ej: Guadaltel S.A."></div><div><label>Organismo</label><input type="text" id="m_org" placeholder="Ej: Universidad de Málaga"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div><h3>Fases detectadas en el XML</h3><div class="sub" id="fc"></div></div></div>
+        <div><table class="ptable"><thead><tr><th style="width:30%">Metafase</th><th style="width:50%">Fase</th><th style="width:20%">ID</th></tr></thead><tbody id="fb"></tbody></table></div>
+      </div>
+    </div>
+    <div class="tab-body" id="t2">
+      <div class="card">
+        <div class="ch"><div><h3>Descripción del procedimiento</h3></div></div>
+        <div class="cb">
+          <div class="fr full"><div><label>Descripción corta</label><input type="text" id="f_desc" placeholder="Descripción en una línea"></div></div>
+          <div class="fr full"><div><label>Descripción ampliada (objeto y alcance)</label><textarea id="f_descamp" style="min-height:60px"></textarea></div></div>
+          <div class="fr full"><div><label>Unidad responsable</label><input type="text" id="f_unidad"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div><h3>Normativa de aplicación</h3><div class="sub">Una norma por línea</div></div></div>
+        <div class="cb"><textarea id="f_norm" style="min-height:100px;font-size:11px"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div><h3>Datos de solicitud y tramitación</h3></div></div>
+        <div class="cb">
+          <div class="fr full"><div><label>Quién puede solicitar</label><textarea id="f_quien" style="min-height:50px"></textarea></div></div>
+          <div class="fr"><div><label>Plazo de solicitud</label><input type="text" id="f_plazo"></div><div><label>Cómo presentar</label><input type="text" id="f_como"></div></div>
+          <div class="fr full"><div><label>Notificación de resolución</label><input type="text" id="f_notif"></div></div>
+          <div class="fr full"><div><label>Recursos legales</label><textarea id="f_rec" style="min-height:60px"></textarea></div></div>
+          <div class="fr full"><div><label>Protección de datos</label><textarea id="f_pd" style="min-height:80px;font-size:11px"></textarea></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-body" id="t3">
+      <p style="font-size:11.5px;color:var(--color-text-secondary);margin-bottom:.75rem">Edita los textos base de cada módulo. Se volcarán tal cual en el ODT.</p>
+      <div id="medit"></div>
+    </div>
+    <div class="tab-body" id="t4">
+      <div class="card">
+        <div class="ch"><div><h3>Vista previa</h3><div class="sub">Estructura del ODT a generar</div></div><button onclick="refreshPrev()" style="font-size:11px;padding:3px 8px">↻</button></div>
+        <div class="cb"><div class="pre" id="prev">Carga un XML para ver la vista previa...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let D=null, selMods=new Set(), modVals={};
+
+const DEFAULTS = {
+  f_norm: `Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común de las Administraciones Públicas.
+Ley 40/2015, de 1 de octubre, de Régimen Jurídico del Sector Público.
+Real Decreto 203/2021, de 30 de marzo, por el que se aprueba el Reglamento de actuación y funcionamiento del sector público por medios electrónicos.
+Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo, de 27 de abril de 2016, relativo a la protección de las personas físicas en lo que respecta al tratamiento de datos personales.`,
+  f_plazo: 'En cualquier momento.',
+  f_como: 'Electrónicamente, a través de la Sede Electrónica.',
+  f_notif: 'La notificación estará a su disposición en su Carpeta Personal de la Sede Electrónica.',
+  f_pd: 'En cumplimiento del Reglamento (UE) 2016/679 y la Ley Orgánica 3/2018, los datos de carácter personal serán tratados por la Administración e incorporados a la actividad de tratamiento correspondiente para gestionar y atender la presente solicitud. Los datos personales proporcionados se conservarán durante el tiempo necesario para cumplir con la finalidad para la que se recabaron. Tiene derecho a acceder, rectificar y suprimir los datos, así como a ejercer los demás derechos reconocidos en la normativa vigente.',
+};
+
+const MODS={
+  PRES: {label:'Presentación presencial', color:'#378add', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('presencial')),
+    fields:{desc:'Fase en la que el gestor (tramitador) podrá registrar, a través de la Sede Electrónica, la solicitud de cualquier persona física (o en su caso, persona jurídica), pudiendo incluir o adjuntar la documentación que el solicitante tiene que presentar junto con la solicitud.',perfil:'GESTOR',tareas:'Primera fase a la que accederá la persona tramitadora cuando se presente en la oficina correspondiente la persona interesada con la voluntad de presentar su solicitud.\nDesde esta fase la persona gestora podrá adjuntar la documentación que se desee acompañar junto a su solicitud o escrito.\nLas tareas disponibles son:\n- Incorporar documento de identificación.\n- Incorporar documento de representación.\n- Incorporar documento de identificación del representante.\n- Solicitud presencial.',finalizar:'Desde la presente fase se puede transicionar a la siguiente fase de tramitación del expediente: Análisis de la documentación.',docs:'Solicitud o escrito presencial. Documento de identificación. Documento de identificación del representante. Documento de representación. Documentación adjunta.'}},
+  TELE: {label:'Presentación telemática', color:'#1d9e75', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('telem')),
+    fields:{desc:'Fase en la que la persona interesada podrá, a través de la Sede Electrónica, presentar la solicitud o el escrito de interés.',perfil:'CIUDADANO',tareas:'Primera fase a la que accederá la persona interesada que desee presentar una solicitud.\nDesde esta fase podrá acceder al formulario que recoge sus datos personales y al formulario de la solicitud.\nLas tareas disponibles son:\n- Formulario de la solicitud del interesado.\n- Incorporar documento de representación.\n- Generar solicitud telemática.\n- Tarea de generar datos del solicitante.\n- Tarea de cierre y registro.',finalizar:'Desde la presente fase se puede transicionar a la siguiente fase de tramitación del expediente: Análisis de la documentación.',docs:'Documento de representación. Documentación adjunta. Solicitud telemática generada automáticamente con los datos del solicitante.'}},
+  ANAL: {label:'Análisis de la documentación', color:'#378add', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('anal')),
+    fields:{desc:'La solicitud ha sido redirigida automáticamente a la unidad de tramitación. La persona tramitadora revisará la solicitud y la documentación presentada por la persona interesada, para comprobar si reúne los requisitos señalados en la Ley (artículo 66 LPACAP). De forma automática, la plataforma enviará un correo a la persona interesada indicando que su solicitud ha sido recibida.',perfil:'GESTOR',tareas:'En esta fase, la persona tramitadora tendrá acceso a la solicitud y a los documentos presentados por la persona interesada, pudiendo discernir si la documentación es correcta o necesita alguna subsanación.',finalizar:'Para finalizar la presente fase, se puede transicionar a las siguientes fases:\n- Requerimiento de subsanación.\n- Recepción y comunicación de plazos.\n- Resolución.',docs:'No se contemplan documentos en esta fase.'}},
+  REQSUB:{label:'Requerimiento de subsanación', color:'#ba7517', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('requerimiento')),
+    fields:{desc:'En virtud de lo dispuesto por el artículo 68 LPACAP, si la solicitud de inicio no reuniese los requisitos señalados, se requerirá al interesado para que, en un plazo de diez días, subsane la falta o acompañe los documentos preceptivos, con indicación de que, si así no lo hiciera, se le tendrá por desistido de su petición.',perfil:'GESTOR',tareas:'La persona tramitadora comunicará las deficiencias advertidas a la persona interesada, fijando los defectos o carencias y las consecuencias de la falta de subsanación.\nLas tareas disponibles son:\n- Generar documento de requerimiento de subsanación.\n- Incluir motivo de subsanación.',finalizar:'Desde la presente fase se puede transicionar a: Subsanación del interesado.',docs:'Requerimiento de subsanación.'}},
+  SUB:  {label:'Subsanación del interesado', color:'#ba7517', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('subsana')&&!f.n.toLowerCase().includes('requerimiento')),
+    fields:{desc:'Trámite en virtud del cual el ciudadano podrá subsanar los defectos advertidos y notificados por el gestor tramitador, si está interesado en la continuación del procedimiento.',perfil:'CIUDADANO y GESTOR',tareas:'La persona interesada, a través de la Sede Electrónica, podrá acceder a las siguientes tareas:\n- Incorporar o adjuntar documentación para la subsanación.\n- Tarea de firma y registro.\nLa persona tramitadora podrá realizar la incorporación de la documentación cuando la subsanación se realice de forma presencial.',finalizar:'Desde esta fase se transicionará a: Análisis de la documentación.',docs:'Documentación aportada para la subsanación.'}},
+  RECEP:{label:'Recepción y comunicación de plazos', color:'#1d9e75', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('recep')||f.n.toLowerCase().includes('plazo')),
+    fields:{desc:'En la presente fase el gestor tramitador comunicará al interesado datos acerca del expediente, como el número de expediente y el plazo máximo de resolución (artículo 21 LPACAP).',perfil:'GESTOR',tareas:'El gestor tramitador realizará las siguientes tareas:\n- Generación de la notificación y comunicación de plazos.\n- Generación de la recepción y comunicación de plazos.',finalizar:'Desde esta fase se transicionará a: Resolución.',docs:'Generación de la notificación y comunicación de plazos. Generación de la recepción y comunicación de plazos.'}},
+  DESIST:{label:'Desistimiento / renuncia', color:'#d4537e', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('desistimiento')),
+    fields:{desc:'Fase en la que el interesado o la Administración puede iniciar el trámite de desistimiento o renuncia al procedimiento, conforme al artículo 94 LPACAP.',perfil:'GESTOR',tareas:'La persona tramitadora gestionará el desistimiento o renuncia presentado por el interesado, generando la resolución correspondiente.',finalizar:'Desde esta fase se transicionará al cierre del expediente.',docs:'Resolución del desistimiento/renuncia.'}},
+  RES:  {label:'Resolución', color:'#1d9e75', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('resoluci')&&!f.n.toLowerCase().includes('archivo')&&!f.n.toLowerCase().includes('desistimiento')),
+    fields:{desc:'En la presente fase y tras la valoración de la solicitud, la persona gestora procederá a dar respuesta a la solicitud emitida por la persona interesada.',perfil:'GESTOR',tareas:'La persona tramitadora podrá generar la respuesta o comunicación en sentido afirmativo o negativo y proceder a la notificación a la persona interesada.\nLas tareas disponibles son:\n- Generación del documento de resolución.',finalizar:'La transición desde esta fase supone ir a: Fin y cierre del expediente.',docs:'Documento de resolución.'}},
+  ARCH: {label:'Resolución de archivo', color:'#e24b4a', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('archivo')),
+    fields:{desc:'Si la solicitud de iniciación no reúne los requisitos señalados en el artículo 66 LPACAP, y el interesado no ha procedido a su subsanación, se dictará resolución de archivo dando por terminado el procedimiento.',perfil:'GESTOR',tareas:'La persona tramitadora generará la resolución de archivo cuando el interesado no cumpla los requisitos o no realice la subsanación solicitada.\nLas tareas disponibles son:\n- Generación del documento de resolución de archivo.',finalizar:'La transición desde esta fase supone ir a: Cierre del expediente.',docs:'Resolución de archivo.'}},
+  INCORP:{label:'Incorporación de documentación', color:'#d4537e', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('incorpora')),
+    fields:{desc:'Evento de tipo "No Hace Salir" (EN) que permite incorporar documentación adicional al expediente en cualquier momento durante la tramitación del procedimiento.',perfil:'GESTOR',tareas:'La persona tramitadora podrá incorporar documentación adicional al expediente a través de las tareas habilitadas para tal fin.',finalizar:'Al tratarse de un evento EN, su conclusión no pone fin al procedimiento, retornando a la fase desde la que fue invocado.',docs:'Documentación incorporada al expediente.'}},
+  CIERRE:{label:'Cierre del expediente', color:'#888780', test:d=>d.fases.some(f=>f.n.toLowerCase().includes('cierre')||f.n.toLowerCase().includes('fin del')),
+    fields:{desc:'En virtud del artículo 84 LPACAP, pondrán fin al procedimiento la resolución, el desistimiento, la renuncia al derecho en que se funde la solicitud y la declaración de caducidad.',perfil:'GESTOR',tareas:'En esta fase no existen tareas. Se pone fin a la tramitación del expediente.',finalizar:'Tras la notificación o comunicación a la persona interesada se procederá al cierre del expediente en la herramienta tramitadora con la funcionalidad "Cerrar Expediente".',docs:''}},
+};
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function clean(n){return String(n||'').replace(/^[A-Z]+_\d+_/,'');}
+
+const dz=document.getElementById('dz'), fi=document.getElementById('fi');
+dz.onclick=()=>fi.click();
+fi.addEventListener('change',function(){if(this.files&&this.files[0]){loadFile(this.files[0]);this.value='';}});
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('ov');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('ov'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('ov');if(e.dataTransfer&&e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+
+function resetState() {
+  D = null;
+  selMods = new Set();
+  modVals = {};
+
+  // Reset formulario de metadatos
+  ['m_nom','m_ver','m_autor','m_org','m_fecha'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value = id==='m_ver'?'1.0':'';
+  });
+
+  // Reset formulario de ficha con valores por defecto
+  document.getElementById('f_desc').value='';
+  document.getElementById('f_descamp').value='';
+  document.getElementById('f_unidad').value='';
+  document.getElementById('f_quien').value='';
+  document.getElementById('f_rec').value='';
+  document.getElementById('f_norm').value=DEFAULTS.f_norm;
+  document.getElementById('f_plazo').value=DEFAULTS.f_plazo;
+  document.getElementById('f_como').value=DEFAULTS.f_como;
+  document.getElementById('f_notif').value=DEFAULTS.f_notif;
+  document.getElementById('f_pd').value=DEFAULTS.f_pd;
+
+  // Volver a la primera pestaña
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('act'));
+  document.querySelectorAll('.tab-body').forEach(t=>t.classList.remove('act'));
+  document.getElementById('tab1').classList.add('act');
+  document.getElementById('t1').classList.add('act');
+
+  // Ocultar paneles sidebar
+  ['pp','mp','gp'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('dlbox').style.display='none';
+  document.getElementById('medit').innerHTML='';
+}
+
+function loadFile(f){
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const xml=new DOMParser().parseFromString(e.target.result,'text/xml');
+      if(xml.querySelector('parsererror'))throw new Error('XML inválido');
+      resetState();
+      D=parseXML(xml); D.filename=f.name;
+      render(f.name);
+    }catch(ex){alert('Error: '+ex.message);}
+  };
+  r.readAsText(f,'UTF-8');
+}
+
+function parseXML(xml){
+  const proc=xml.querySelector('DEF_PROCEDIMIENTO');
+  const d={id:proc.getAttribute('id')||'',nombre:proc.getAttribute('nombre')||'',desc:proc.getAttribute('descripcion')||'',descAmp:proc.getAttribute('descrip_ampliada')||'',sistema:proc.getAttribute('sistema')||'',familia:proc.getAttribute('desc_familia')||'',version:proc.getAttribute('version')||'1.0'};
+  d.perfiles=[...xml.querySelectorAll('PERFIL_USUARIO')].map(p=>({id:p.getAttribute('id'),nombre:p.getAttribute('nombre'),desc:p.getAttribute('descripcion')||''}));
+  d.perfilesMap=Object.fromEntries(d.perfiles.map(p=>[p.id,p.nombre]));
+  d.metafases=[...xml.querySelectorAll('METAFASE')].map(mf=>({id:mf.getAttribute('id'),nombre:mf.getAttribute('nombre'),fases:[...mf.querySelectorAll('FASE')].map(f=>({id:f.getAttribute('id'),n:f.getAttribute('nombre')||'',desc:f.getAttribute('descripcion')||'',aux:f.getAttribute('texto_aux')||''}))}));
+  d.fases=d.metafases.flatMap(m=>m.fases.map(f=>({...f,meta:m.nombre,metaId:m.id})));
+  d.transiciones=[...xml.querySelectorAll('TRANSICION')].map(tr=>({id:tr.getAttribute('id'),etiqueta:tr.getAttribute('etiqueta')||'',desc:tr.getAttribute('descripcion')||'',ini:[...tr.querySelectorAll('FASE_INI FASE_ID')].map(f=>f.getAttribute('id')),fin:[...tr.querySelectorAll('FASES_FIN FASE_ID')].map(f=>f.getAttribute('id')),perfiles:[...tr.querySelectorAll('PERFIL_TRANSICION')].map(p=>p.getAttribute('perfil_id'))}));
+  return d;
+}
+
+function metaBadge(n){n=n.toLowerCase();if(n.includes('tramit'))return'b-tr';if(n.includes('inicio'))return'b-in';if(n.includes('archivo'))return'b-ar';if(n.includes('cierre'))return'b-ci';return'b-pl';}
+
+function render(fname){
+  document.getElementById('finfo').innerHTML=`<div class="ok-file"><i class="ti ti-check" aria-hidden="true"></i><span>${esc(fname)}</span><span style="cursor:pointer;opacity:.5" onclick="clearAll()">✕</span></div>`;
+  document.getElementById('pp').style.display='block';
+  document.getElementById('pbox').innerHTML=`<div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px;margin-bottom:6px"><div style="font-size:12.5px;font-weight:500">${esc(D.nombre)}</div><div style="font-size:11px;color:var(--color-text-secondary)">${esc(D.desc)}</div></div><div class="stats"><div class="stat"><div class="stat-n">${D.metafases.length}</div><div class="stat-l">Metafases</div></div><div class="stat"><div class="stat-n">${D.fases.length}</div><div class="stat-l">Fases</div></div></div>`;
+
+  let mhtml='';
+  for(const[k,m]of Object.entries(MODS)){
+    if(m.test(D)){
+      selMods.add(k);
+      modVals[k]={...m.fields};
+      mhtml+=`<div class="mod sel" id="mod_${k}" onclick="toggleMod('${k}')"><div class="dot" style="background:${m.color}"></div><span class="mod-n">${esc(m.label)}</span><span class="mod-ck">✓</span></div>`;
+    }
+  }
+  document.getElementById('mp').style.display='block';
+  document.getElementById('ml').innerHTML=mhtml;
+  document.getElementById('gp').style.display='block';
+
+  // Prerellenar metadatos del procedimiento
+  document.getElementById('m_nom').value=D.desc;
+  document.getElementById('m_fecha').value=new Date().toISOString().slice(0,10);
+  document.getElementById('f_desc').value=D.desc;
+  document.getElementById('f_descamp').value=D.descAmp||D.desc;
+
+  document.getElementById('fc').textContent=`${D.fases.length} fases · ${D.metafases.length} metafases`;
+  let fb='';
+  D.metafases.forEach(mf=>mf.fases.forEach((f,i)=>{fb+=`<tr><td>${i===0?`<span class="badge ${metaBadge(mf.nombre)}">${esc(mf.nombre)}</span>`:''}</td><td style="font-weight:500;font-size:11.5px">${esc(clean(f.n))}</td><td><span class="badge b-pl" style="font-size:9px">${esc(f.id)}</span></td></tr>`;}));
+  document.getElementById('fb').innerHTML=fb;
+
+  renderModEditors();
+  document.getElementById('emp').style.display='none';
+  document.getElementById('ca').style.display='block';
+  refreshPrev();
+}
+
+function renderModEditors(){
+  let html='';
+  for(const k of selMods){
+    const m=MODS[k];if(!m)continue;
+    const v=modVals[k]||m.fields;
+    html+=`<div class="mod-editor"><div class="mod-head" id="mh_${k}" onclick="toggleModEditor('${k}')"><div class="dot2" style="background:${m.color}"></div><h4>${esc(m.label)}</h4><i class="ti ti-chevron-down chevron" aria-hidden="true"></i></div><div class="mod-body" id="mb_${k}"><div class="mod-field"><label>Descripción</label><textarea id="e_${k}_desc" rows="3" oninput="sv('${k}','desc',this.value)">${esc(v.desc)}</textarea></div><div class="mod-field"><label>Perfil</label><input type="text" id="e_${k}_perfil" value="${esc(v.perfil)}" oninput="sv('${k}','perfil',this.value)"></div><div class="mod-field"><label>Tramitación y tareas</label><textarea id="e_${k}_tareas" rows="5" oninput="sv('${k}','tareas',this.value)">${esc(v.tareas)}</textarea></div><div class="mod-field"><label>Finalizar</label><textarea id="e_${k}_finalizar" rows="2" oninput="sv('${k}','finalizar',this.value)">${esc(v.finalizar)}</textarea></div><div class="mod-field"><label>Documentos</label><textarea id="e_${k}_docs" rows="2" oninput="sv('${k}','docs',this.value)">${esc(v.docs)}</textarea></div><button onclick="resetMod('${k}')" style="font-size:10px;padding:3px 8px;margin-top:4px;color:var(--color-text-tertiary)">↺ Restaurar texto base</button></div></div>`;
+  }
+  document.getElementById('medit').innerHTML=html||'<p style="font-size:12px;color:var(--color-text-tertiary)">No hay módulos seleccionados.</p>';
+}
+
+function toggleModEditor(k){document.getElementById('mh_'+k).classList.toggle('open');document.getElementById('mb_'+k).classList.toggle('open');}
+function sv(k,f,v){if(!modVals[k])modVals[k]={};modVals[k][f]=v;}
+function resetMod(k){const m=MODS[k];if(!m)return;modVals[k]={...m.fields};['desc','perfil','tareas','finalizar','docs'].forEach(f=>{const el=document.getElementById(`e_${k}_${f}`);if(el)el.value=m.fields[f]||'';});}
+function toggleMod(k){const el=document.getElementById('mod_'+k);if(selMods.has(k)){selMods.delete(k);el.classList.remove('sel');}else{selMods.add(k);el.classList.add('sel');if(!modVals[k])modVals[k]={...MODS[k].fields};}renderModEditors();refreshPrev();}
+function showTab(id,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('act'));document.querySelectorAll('.tab-body').forEach(t=>t.classList.remove('act'));el.classList.add('act');document.getElementById(id).classList.add('act');if(id==='t4')refreshPrev();}
+
+function clearAll(){
+  resetState();
+  document.getElementById('finfo').innerHTML='';
+  document.getElementById('emp').style.display='flex';
+  document.getElementById('ca').style.display='none';
+}
+
+function getFaseModKey(f){
+  const n=(f.n||'').toLowerCase();
+  if(n.includes('presencial'))return'PRES';
+  if(n.includes('telem'))return'TELE';
+  if(n.includes('anal'))return'ANAL';
+  if(n.includes('requerimiento'))return'REQSUB';
+  if(n.includes('subsana')&&!n.includes('requerimiento'))return'SUB';
+  if(n.includes('recep')||n.includes('plazo'))return'RECEP';
+  if(n.includes('desistimiento'))return'DESIST';
+  if(n.includes('resoluci')&&!n.includes('archivo')&&!n.includes('desistimiento'))return'RES';
+  if(n.includes('archivo'))return'ARCH';
+  if(n.includes('incorpora'))return'INCORP';
+  if(n.includes('cierre')||n.includes('fin del'))return'CIERRE';
+  return null;
+}
+
+function refreshPrev(){
+  if(!D)return;
+  const nom=document.getElementById('m_nom').value||D.desc,ver=document.getElementById('m_ver').value||'1.0';
+  let txt=`GUÍA DE TRAMITACIÓN\n${'─'.repeat(40)}\nProcedimiento: ${nom}  v${ver}\n\nESTRUCTURA\n${'─'.repeat(30)}\n1. Introducción\n2. Objeto y alcance\n3. Catálogo de conceptos\n4. Ficha del procedimiento\n5. Detalles\n   5.1. Flujograma\n   5.2. Metafases y fases\n`;
+  let s=1;
+  D.metafases.forEach(mf=>{const ff=mf.fases.filter(f=>{const k=getFaseModKey(f);return k&&selMods.has(k);});if(!ff.length)return;txt+=`       5.2.${s}. ${mf.nombre}\n`;ff.forEach((f,i)=>txt+=`           5.2.${s}.${i+1}. ${clean(f.n)}\n`);s++;});
+  txt+=`   5.3. Perfiles\n6. Control de versiones\n\nMÓDULOS ACTIVOS (${selMods.size})\n${'─'.repeat(30)}\n`;
+  for(const k of selMods){const m=MODS[k];if(m)txt+=`✓ ${m.label}\n`;}
+  document.getElementById('prev').textContent=txt;
+}
+
+function crc32(d){const t=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=(c&1)?0xEDB88320^(c>>>1):c>>>1;t[i]=c;}let c=0xFFFFFFFF;for(let i=0;i<d.length;i++)c=t[(c^d[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
+function u8s(s){return new TextEncoder().encode(s);}
+function u16(n){return new Uint8Array([n&0xFF,(n>>8)&0xFF]);}
+function u32(n){return new Uint8Array([n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF]);}
+function cat(...aa){const tot=aa.reduce((s,a)=>s+a.length,0),out=new Uint8Array(tot);let off=0;for(const a of aa){out.set(a,off);off+=a.length;}return out;}
+async function deflateRaw(d){try{const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(d);w.close();const ch=[],r=cs.readable.getReader();while(1){const{done,value}=await r.read();if(done)break;ch.push(value);}return cat(...ch);}catch(e){return null;}}
+async function buildZip(files){const en=[],pt=[];let off=0;for(const f of files){const nb=u8s(f.name),raw=typeof f.data==='string'?u8s(f.data):f.data,crc=crc32(raw);let comp=null,meth=0;if(!f.store){comp=await deflateRaw(raw);if(comp&&comp.length<raw.length)meth=8;else comp=null;}const cd=comp||raw;const lh=cat(new Uint8Array([0x50,0x4B,0x03,0x04]),u16(meth===8?20:10),u16(0),u16(meth),u16(0),u16(0x5400),u32(crc),u32(cd.length),u32(raw.length),u16(nb.length),u16(0),nb);pt.push(lh,cd);en.push({nb,crc,cl:cd.length,rl:raw.length,meth,off});off+=lh.length+cd.length;}
+const cds=en.map(e=>cat(new Uint8Array([0x50,0x4B,0x01,0x02]),u16(20),u16(e.meth===8?20:10),u16(0),u16(e.meth),u16(0),u16(0x5400),u32(e.crc),u32(e.cl),u32(e.rl),u16(e.nb.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(e.off),e.nb));
+const cdd=cat(...cds),eocd=cat(new Uint8Array([0x50,0x4B,0x05,0x06]),u16(0),u16(0),u16(en.length),u16(en.length),u32(cdd.length),u32(off),u16(0));return cat(...pt,cdd,eocd);}
+
+function op(t,s='TB'){return`<text:p text:style-name="${s}">${esc(t)}</text:p>\n`;}
+function oh(t,l){return`<text:h text:style-name="H${l}" text:outline-level="${l}">${esc(t)}</text:h>\n`;}
+function oc(v,cs='C1',ps='TC'){return`<table:table-cell table:style-name="${cs}"><text:p text:style-name="${ps}">${esc(v)}</text:p></table:table-cell>\n`;}
+function ohc(v){return`<table:table-cell table:style-name="C1"><text:p text:style-name="TH">${esc(v)}</text:p></table:table-cell>\n`;}
+function or2(...cc){return`<table:table-row>${cc.join('')}</table:table-row>\n`;}
+function mop(text){return text.split('\n').map(l=>op(l.trim()||' ')).join('');}
+
+function buildFaseODT(fase,mf){
+  const nom=clean(fase.n),k=getFaseModKey(fase),v=k&&modVals[k]?modVals[k]:(k?MODS[k].fields:{desc:fase.desc||nom,perfil:'',tareas:'',finalizar:'',docs:''});
+  const filas=[['METAFASE',mf.nombre],['FASE ACTUAL',nom.toUpperCase()],['DESCRIPCIÓN',v.desc||fase.desc||nom],['PERFIL',v.perfil],['TRAMITACIÓN Y TAREAS',v.tareas],['FINALIZAR',v.finalizar],['DOCUMENTOS',v.docs||'No se contemplan documentos en esta fase.']];
+  let out=oh(nom,4)+`<table:table table:name="F${fase.id}" table:style-name="TFase"><table:table-column table:style-name="TFase.K"/><table:table-column table:style-name="TFase.V"/>\n`;
+  out+=`<table:table-row><table:table-cell table:style-name="C3" table:number-columns-spanned="2"><text:p text:style-name="TH2">${esc(nom.toUpperCase())}</text:p></table:table-cell><table:covered-table-cell/></table:table-row>\n`;
+  filas.forEach(([k2,v2])=>{out+=`<table:table-row>${ohc(k2)}<table:table-cell table:style-name="C2">${mop(v2||'')}</table:table-cell></table:table-row>\n`;});
+  return out+`</table:table>\n${op('')}`;
+}
+
+function buildContent(meta){
+  const nom=meta.nom,ver=meta.ver,fecha=meta.fecha,autor=meta.autor,org=meta.org;
+  const fdesc=document.getElementById('f_desc').value||D.desc;
+  const fdescAmp=document.getElementById('f_descamp').value||D.descAmp;
+  const funidad=document.getElementById('f_unidad').value||'';
+  const fnorm=document.getElementById('f_norm').value||'';
+  const fquien=document.getElementById('f_quien').value||'';
+  const fplazo=document.getElementById('f_plazo').value||'';
+  const fcomo=document.getElementById('f_como').value||'';
+  const fnotif=document.getElementById('f_notif').value||'';
+  const frec=document.getElementById('f_rec').value||'';
+  const fpd=document.getElementById('f_pd').value||'';
+
+  let agrup='';
+  D.metafases.forEach(mf=>{
+    const fasesIncl=mf.fases.filter(f=>{const k=getFaseModKey(f);return k&&selMods.has(k);});
+    fasesIncl.forEach((f,i)=>{
+      agrup+=`<table:table-row>\n`;
+      if(i===0){agrup+=`<table:table-cell table:style-name="C1" table:number-rows-spanned="${fasesIncl.length}"><text:p text:style-name="TH">${esc('FASE DE '+mf.nombre.toUpperCase())}</text:p></table:table-cell>\n`;}
+      else{agrup+=`<table:covered-table-cell/>\n`;}
+      agrup+=`${oc(clean(f.n),'C2','TC')}</table:table-row>\n`;
+    });
+  });
+
+  let faseSecs='';
+  D.metafases.forEach(mf=>{
+    const ff=mf.fases.filter(f=>{const k=getFaseModKey(f);return k&&selMods.has(k);});
+    if(!ff.length)return;
+    faseSecs+=oh(mf.nombre+' del procedimiento',3);
+    ff.forEach(f=>{faseSecs+=buildFaseODT(f,mf);});
+  });
+
+  const perfilesT=D.perfiles.map(p=>op(p.nombre+' → '+(p.desc||p.nombre))).join('');
+  const normLines=fnorm.split('\n').filter(l=>l.trim()).map(l=>op('• '+l.trim())).join('');
+
+  return`<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3">
+<office:automatic-styles>
+<style:style style:name="TFase" style:family="table"><style:table-properties style:width="16cm" table:align="margins"/></style:style>
+<style:style style:name="TFase.K" style:family="table-column"><style:table-column-properties style:column-width="5cm"/></style:style>
+<style:style style:name="TFase.V" style:family="table-column"><style:table-column-properties style:column-width="11cm"/></style:style>
+<style:style style:name="C1" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #aaa" fo:padding="0.12cm" fo:background-color="#eef4f0"/></style:style>
+<style:style style:name="C2" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #aaa" fo:padding="0.12cm"/></style:style>
+<style:style style:name="C3" style:family="table-cell"><style:table-cell-properties fo:border="0.5pt solid #1a3a2a" fo:padding="0.14cm" fo:background-color="#1a3a2a"/></style:style>
+</office:automatic-styles>
+<office:body><office:text>
+${oh('Guía de Tramitación del Procedimiento de '+nom,1)}${op('')}
+<table:table table:name="Portada" table:style-name="TFase"><table:table-column table:style-name="TFase.K"/><table:table-column table:style-name="TFase.V"/>
+${or2(ohc('Nombre del Proyecto'),oc('Guía de Tramitación del Procedimiento de '+nom,'C2','TC'))}
+${or2(ohc('Fecha'),oc(fecha,'C2','TC'))}${or2(ohc('Versión'),oc(ver,'C2','TC'))}
+${or2(ohc('Autor'),oc(autor,'C2','TC'))}
+${or2(ohc('Tipo de documento'),oc('Guía de Tramitación del Procedimiento de '+nom,'C2','TC'))}
+</table:table>${op('')}
+${oh('1. Introducción',1)}
+${op('El presente documento describe el modelado para el Procedimiento de '+nom+', cuyo objetivo es mejorar los servicios y alcanzar el buen funcionamiento de las instituciones.')}
+${op('El proceso estará disponible a través de un trámite telemático específico que responda a las necesidades propias de '+(org||'la organización')+'. A continuación, se detallarán los diferentes pasos para la tramitación del procedimiento exponiendo así, según fases, las diferentes tareas que conforman su flujo de tramitación, su cometido, así como posibles transiciones existentes entre las distintas fases.')}
+${oh('2. Objeto y alcance',1)}
+${op('El objeto principal del presente documento será identificar las diferentes tareas a realizar para la tramitación del Procedimiento de '+nom+'.')}
+${fdescAmp?mop(fdescAmp):''}
+${oh('3. Catálogo de conceptos del modelado',1)}
+${op('Fase: Situación en la que puede encontrarse una solicitud o un expediente a lo largo del procedimiento. Las fases pueden contener documentos y tareas. Un conjunto de fases constituyen la metafase.')}
+${op('Transición: Permite avanzar o retroceder de una fase a otra.')}
+${op('Transición de inicio: Permite señalar las posibles formas de comenzar un procedimiento.')}
+${op('Transición de fin: Pone fin a la fase inmediatamente anterior.')}
+${op('Evento EN (No Hace Salir): Accesible a lo largo de toda la tramitación. Su inicio y conclusión no ponen fin al procedimiento.')}
+${op('Evento ES (Hace Salir): Su inicio pone fin al procedimiento, impidiendo continuar con el mismo.')}
+${op('Condición: Permite adecuar el procedimiento a determinadas circunstancias.')}
+${op('Aviso: Muestra un mensaje a modo de aviso a la hora de efectuar determinados trámites.')}
+${op('Perfil: Indicativo de quién deberá efectuar el trámite y/o los documentos correspondientes.')}
+${oh('4. Ficha del procedimiento',1)}
+${op('Se describe a continuación la ficha del procedimiento telemático puesto a disposición de los interesados en Sede Electrónica.')}
+<table:table table:name="Ficha" table:style-name="TFase"><table:table-column table:style-name="TFase.K"/><table:table-column table:style-name="TFase.V"/>
+${or2(ohc('Descripción'),oc(fdesc,'C2','TC'))}
+${or2(ohc('Unidad responsable'),oc(funidad||'—','C2','TC'))}
+${or2(ohc('Normativa de aplicación'),'<table:table-cell table:style-name="C2">'+normLines+'</table:table-cell>')}
+${fquien?or2(ohc('Quién puede solicitar'),oc(fquien,'C2','TC')):''}
+${or2(ohc('Plazo de solicitud'),oc(fplazo,'C2','TC'))}
+${or2(ohc('Cómo presentar'),oc(fcomo,'C2','TC'))}
+${or2(ohc('Notificación'),oc(fnotif,'C2','TC'))}
+${frec?or2(ohc('Recursos legales'),oc(frec,'C2','TC')):''}
+${fpd?or2(ohc('Protección de datos'),'<table:table-cell table:style-name="C2">'+mop(fpd)+'</table:table-cell>'):''}
+</table:table>${op('')}
+${oh('5. Detalles',1)}
+${op('A continuación, se describen las fases definidas en el procedimiento. De igual modo, se señalarán los actos necesarios a ejecutar y que conformarán el desarrollo del actual procedimiento.')}
+<table:table table:name="Agrupacion" table:style-name="TFase"><table:table-column table:style-name="TFase.K"/><table:table-column table:style-name="TFase.V"/>
+${or2(ohc('AGRUPACIÓN DE FASES'),ohc('FASE / TRÁMITE'))}${agrup}
+</table:table>${op('')}
+${oh('5.1. Flujograma',2)}${op('[Insertar imagen del flujograma del procedimiento]')}
+${oh('5.2. Metafases y fases del procedimiento',2)}${faseSecs}
+${oh('5.3. Perfiles',2)}
+${op('Actualmente se encuentran asignados los siguientes perfiles para todos los trámites y documentos del procedimiento:')}
+${perfilesT}
+${oh('6. Control de versiones',1)}
+<table:table table:name="CV" table:style-name="TFase"><table:table-column table:style-name="TFase.K"/><table:table-column table:style-name="TFase.V"/>
+${or2(ohc('Versión'),ohc('Fecha'))}
+${or2(oc(ver,'C1','TC'),oc(fecha+(autor?' — '+autor:''),'C2','TC'))}
+</table:table>
+</office:text></office:body></office:document-content>`;
+}
+
+const STYLES=`<?xml version="1.0" encoding="UTF-8"?><office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" office:version="1.3"><office:styles><style:style style:name="Default" style:family="paragraph"><style:text-properties fo:font-size="10.5pt" style:font-name="Liberation Sans"/></style:style><style:style style:name="TB" style:display-name="Text Body" style:family="paragraph" style:parent-style-name="Default"><style:paragraph-properties fo:margin-top="0cm" fo:margin-bottom="0.18cm" fo:line-height="130%"/><style:text-properties fo:font-size="10.5pt"/></style:style><style:style style:name="H1" style:display-name="Heading 1" style:family="paragraph" style:parent-style-name="Default" style:next-style-name="TB"><style:paragraph-properties fo:margin-top="0.5cm" fo:margin-bottom="0.2cm" fo:keep-with-next="always" fo:border-bottom="1.5pt solid #1a3a2a" fo:padding-bottom="0.1cm"/><style:text-properties fo:font-size="16pt" fo:font-weight="bold" fo:color="#1a3a2a"/></style:style><style:style style:name="H2" style:display-name="Heading 2" style:family="paragraph" style:parent-style-name="Default" style:next-style-name="TB"><style:paragraph-properties fo:margin-top="0.4cm" fo:margin-bottom="0.18cm" fo:keep-with-next="always"/><style:text-properties fo:font-size="13pt" fo:font-weight="bold" fo:color="#2d6648"/></style:style><style:style style:name="H3" style:display-name="Heading 3" style:family="paragraph" style:parent-style-name="Default" style:next-style-name="TB"><style:paragraph-properties fo:margin-top="0.35cm" fo:margin-bottom="0.15cm" fo:keep-with-next="always"/><style:text-properties fo:font-size="12pt" fo:font-weight="bold" fo:color="#1a3a2a"/></style:style><style:style style:name="H4" style:display-name="Heading 4" style:family="paragraph" style:parent-style-name="Default" style:next-style-name="TB"><style:paragraph-properties fo:margin-top="0.3cm" fo:margin-bottom="0.1cm"/><style:text-properties fo:font-size="11pt" fo:font-weight="bold" fo:color="#333"/></style:style><style:style style:name="TC" style:display-name="Table Contents" style:family="paragraph" style:parent-style-name="Default"><style:paragraph-properties fo:margin-top="0cm" fo:margin-bottom="0cm"/><style:text-properties fo:font-size="9.5pt"/></style:style><style:style style:name="TH" style:display-name="Table Heading" style:family="paragraph" style:parent-style-name="Default"><style:paragraph-properties fo:margin-top="0cm" fo:margin-bottom="0cm"/><style:text-properties fo:font-size="9.5pt" fo:font-weight="bold" fo:color="#1a3a2a"/></style:style><style:style style:name="TH2" style:display-name="Table Heading Dark" style:family="paragraph" style:parent-style-name="Default"><style:paragraph-properties fo:margin-top="0cm" fo:margin-bottom="0cm"/><style:text-properties fo:font-size="10pt" fo:font-weight="bold" fo:color="#ffffff"/></style:style></office:styles><office:automatic-styles><style:page-layout style:name="pm1"><style:page-layout-properties fo:page-width="21cm" fo:page-height="29.7cm" fo:margin-top="2.5cm" fo:margin-bottom="2cm" fo:margin-left="2.5cm" fo:margin-right="2cm"/></style:page-layout></office:automatic-styles><office:master-styles><style:master-page style:name="Standard" style:page-layout-name="pm1"/></office:master-styles></office:document-styles>`;
+const META=`<?xml version="1.0" encoding="UTF-8"?><office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" office:version="1.3"><office:meta><meta:generator>Generador Guias Tramitacion v3.1</meta:generator></office:meta></office:document-meta>`;
+const MANIF=`<?xml version="1.0" encoding="UTF-8"?><manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" manifest:version="1.3"><manifest:file-entry manifest:full-path="/" manifest:media-type="application/vnd.oasis.opendocument.text"/><manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/><manifest:file-entry manifest:full-path="styles.xml" manifest:media-type="text/xml"/><manifest:file-entry manifest:full-path="meta.xml" manifest:media-type="text/xml"/></manifest:manifest>`;
+
+async function gen(){
+  if(!D)return;
+  const btn=document.getElementById('gbtn'),bar=document.getElementById('gbar'),pf=document.getElementById('pf'),pm=document.getElementById('pm'),dl=document.getElementById('dlbox');
+  const sp=(p,m)=>{pf.style.width=p+'%';pm.textContent=m;};
+  btn.disabled=true;bar.style.display='block';dl.style.display='none';
+  try{
+    sp(10,'Leyendo metadatos...');await new Promise(r=>setTimeout(r,30));
+    const meta={nom:document.getElementById('m_nom').value||D.desc,ver:document.getElementById('m_ver').value||'1.0',fecha:document.getElementById('m_fecha').value||new Date().toLocaleDateString('es-ES'),autor:document.getElementById('m_autor').value||'',org:document.getElementById('m_org').value||''};
+    sp(25,'Generando content.xml...');await new Promise(r=>setTimeout(r,30));
+    const cx=buildContent(meta);
+    sp(50,'Validando XML...');await new Promise(r=>setTimeout(r,20));
+    const tp=new DOMParser().parseFromString(cx,'text/xml');
+    if(tp.querySelector('parsererror'))throw new Error('content.xml inválido:\n'+tp.querySelector('parsererror').textContent.slice(0,200));
+    sp(65,'Empaquetando...');await new Promise(r=>setTimeout(r,20));
+    const zip=await buildZip([{name:'mimetype',data:'application/vnd.oasis.opendocument.text',store:true},{name:'META-INF/manifest.xml',data:MANIF},{name:'content.xml',data:cx},{name:'styles.xml',data:STYLES},{name:'meta.xml',data:META}]);
+    sp(90,'Preparando descarga...');await new Promise(r=>setTimeout(r,20));
+    const b64=btoa(String.fromCharCode(...new Uint8Array(zip.buffer)));
+    const fname=`Guia_Tramitacion_${D.nombre}_v${meta.ver}.odt`;
+    const a=document.getElementById('dla');
+    a.href='data:application/vnd.oasis.opendocument.text;base64,'+b64;
+    a.download=fname;a.textContent=fname;
+    dl.style.display='flex';sp(100,'¡ODT listo!');
+    setTimeout(()=>{bar.style.display='none';btn.disabled=false;pf.style.width='0%';},2000);
+  }catch(err){alert('Error: '+err.message);bar.style.display='none';btn.disabled=false;}
+}
+</script>
